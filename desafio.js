@@ -1,7 +1,7 @@
 
 class ProductManager{
     static products = []
-    static id = 0
+    static id = 1
 
     constructor(title, description, price, thumbnail, code, stock){
         this.id = ProductManager.id++
@@ -42,12 +42,35 @@ class ProductManager{
           console.error("Producto no encontrado. ID no válido.")
         }
     }
-}
+
+    static updateProduct(id, updatedProduct) {
+      const productIndex = ProductManager.products.findIndex((product) => product.id === id)
+      if (productIndex === -1) {
+        console.error("Producto no encontrado. ID no válido.")
+        return;
+      }
+
+      updatedProduct.id = id
+
+      ProductManager.products[productIndex] = updatedProduct
+    }
+
+    static deleteProduct(id) {
+      const productIndex = ProductManager.products.findIndex((product) => product.id === id);
+      if (productIndex === -1) {
+        console.error("Producto no encontrado. ID no válido.");
+        return;
+      }
+  
+      ProductManager.products.splice(productIndex, 1);
+      console.log(`Producto con ID ${id} ha sido eliminado.`);
+    }
+  }
 
 ProductManager.addProduct("Lies of P", "A Souls-like videogame", 40, "LiesofP.jpg", 2873, true)
 ProductManager.addProduct("Sekiro: Shadow Die Twice", "Souls-like game with katanas", 60, "Sekiro.jpg", 2875, true)
 ProductManager.addProduct("Shadow of doubt", "A Detective sandbox game", 15, "ShadowOfDobut.jpg", 1168, true)
-ProductManager.addProduct("Neon White", "A Parkour game", 20, "NeonWhite.jpg", 1168, true)
+ProductManager.addProduct("Neon White", "A Parkour game", 20, "NeonWhite.jpg", 1268, true)
 
 const allProducts = ProductManager.getProducts()
 console.log(allProducts)
@@ -58,3 +81,22 @@ const productById = ProductManager.getProductById(2)
 console.log(productById)
 
 const nonExistentProduct = ProductManager.getProductById(10)
+
+
+
+ProductManager.updateProduct(2, {
+  title: "Elden Ring",
+  description: "Lastest game of From Software",
+  price: 60,
+  thumbnail: "eldenring.jpg",
+  code: "2875",
+  stock: true,
+});
+
+console.log(allProducts)
+
+console.log(ProductManager.getProductById(2))
+
+ProductManager.deleteProduct(4)
+
+console.log(ProductManager.getProducts())
