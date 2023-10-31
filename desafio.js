@@ -3,7 +3,7 @@ class ProductManager{
     static products = []
     static id = 1
 
-    constructor(title, description, price, thumbnail, code, stock){
+    constructor(title, description, price, thumbnail, code, stock, path){
         this.id = ProductManager.id++
         this.title = title
         this.description = description
@@ -11,10 +11,11 @@ class ProductManager{
         this.thumbnail = thumbnail
         this.code = code
         this.stock = stock
+        this.path = path
     }
 
-    static addProduct(title, description, price, thumbnail, code, stock) {
-        if (!title || !description || !price || !thumbnail || !code || !stock) {
+    static addProduct(title, description, price, thumbnail, code, stock, path) {
+        if (!title || !description || !price || !thumbnail || !code || !stock || !path) {
           console.log("Todos los campos son obligatorios.")
           return
         }
@@ -25,7 +26,7 @@ class ProductManager{
           return
         }
     
-        const newProduct = new ProductManager(title, description, price, thumbnail, code, stock)
+        const newProduct = new ProductManager(title, description, price, thumbnail, code, stock, path)
         ProductManager.products.push(newProduct)
         console.log(`Producto agregado con ID: ${newProduct.id}`)
       }
@@ -67,10 +68,10 @@ class ProductManager{
     }
   }
 
-ProductManager.addProduct("Lies of P", "A Souls-like videogame", 40, "LiesofP.jpg", 2873, true)
-ProductManager.addProduct("Sekiro: Shadow Die Twice", "Souls-like game with katanas", 60, "Sekiro.jpg", 2875, true)
-ProductManager.addProduct("Shadow of doubt", "A Detective sandbox game", 15, "ShadowOfDobut.jpg", 1168, true)
-ProductManager.addProduct("Neon White", "A Parkour game", 20, "NeonWhite.jpg", 1268, true)
+ProductManager.addProduct("Lies of P", "A Souls-like videogame", 40, "LiesofP.jpg", 2873, true, '/products/img/LiesOfP.jpg')
+ProductManager.addProduct("Sekiro: Shadow Die Twice", "Souls-like game with katanas", 60, "Sekiro.jpg", 2875, true, '/products/img/Sekiro.jpg')
+ProductManager.addProduct("Shadow of doubt", "A Detective sandbox game", 15, "ShadowOfDobut.jpg", 1168, true, '/products/img/ShadowOfDobut.jpg')
+ProductManager.addProduct("Neon White", "A Parkour game", 20, "NeonWhite.jpg", 1268, true, '/products/img/NeonWhite.jpg')
 
 const allProducts = ProductManager.getProducts()
 console.log(allProducts)
@@ -91,6 +92,7 @@ ProductManager.updateProduct(2, {
   thumbnail: "eldenring.jpg",
   code: "2875",
   stock: true,
+  path: '/products/img/EldenRing.jpg'
 });
 
 console.log(allProducts)
