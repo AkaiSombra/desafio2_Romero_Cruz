@@ -1,4 +1,8 @@
 
+import fs from 'fs'
+import { json } from 'stream/consumers'
+
+
 class ProductManager{
     static products = []
     static id = 1
@@ -15,7 +19,7 @@ class ProductManager{
     }
 
     static addProduct(title, description, price, thumbnail, code, stock, path) {
-        if (!title || !description || !price || !thumbnail || !code || !stock || !path) {
+        if (!title || !description || !price || !thumbnail || !code || !stock) {
           console.log("Todos los campos son obligatorios.")
           return
         }
@@ -66,6 +70,24 @@ class ProductManager{
       ProductManager.products.splice(productIndex, 1);
       console.log(`Producto con ID ${id} ha sido eliminado.`);
     }
+
+    static saveProductsToJSON(filePath) {
+      try {
+        const dataToWrite = JSON.stringify(ProductManager.products, null, 2)
+        fs.writeFileSync(filePath, dataToWrite, 'utf-8')
+      } catch (error) {
+        console.error(error.message)
+      }
+    }
+
+    static loadProductsFromJSON(filePath) {
+      try {
+        const dataJSON = fs.readFileSync(filePath, 'utf8')
+        ProductManager.products = JSON.parse(dataJSON)
+      } catch (error) {
+        console.error(error.message)
+      }
+    }    
   }
 
 ProductManager.addProduct("Lies of P", "A Souls-like videogame", 40, "LiesofP.jpg", 2873, true, '/products/img/LiesOfP.jpg')
@@ -81,7 +103,7 @@ console.log(allProducts)
 const productById = ProductManager.getProductById(2)
 console.log(productById)
 
-const nonExistentProduct = ProductManager.getProductById(10)
+// const nonExistentProduct = ProductManager.getProductById(10)
 
 
 
@@ -102,3 +124,9 @@ console.log(ProductManager.getProductById(2))
 ProductManager.deleteProduct(4)
 
 console.log(ProductManager.getProducts())
+
+const JSONPath = './ProductManager.json'
+
+ProductManager.saveProductsToJSON(JSONPath)
+
+ProductManager.loadProductsFromJSON(JSONPath)
