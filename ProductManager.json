@@ -10,18 +10,18 @@
     "path": "/products/img/LiesOfP.jpg"
   },
   {
-    "title": "Elden Ring",
-    "description": "Lastest game of From Software",
+    "id": 2,
+    "title": "Sekiro: Shadow Die Twice",
+    "description": "Souls-like game with katanas",
     "price": 60,
-    "thumbnail": "eldenring.jpg",
-    "code": "2875",
+    "thumbnail": "Sekiro.jpg",
+    "code": 2875,
     "stock": true,
-    "path": "/products/img/EldenRing.jpg",
-    "id": 2
+    "path": "/products/img/Sekiro.jpg"
   },
   {
     "id": 3,
-    "title": "Shadow of doubt",
+    "title": "Zelda",
     "description": "A Detective sandbox game",
     "price": 15,
     "thumbnail": "ShadowOfDobut.jpg",

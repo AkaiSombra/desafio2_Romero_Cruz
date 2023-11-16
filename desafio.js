@@ -2,13 +2,13 @@
 import fs from 'fs'
 import { json } from 'stream/consumers'
 
+const JSONPath = './ProductManager.json'
 
 class ProductManager{
     static products = []
-    static id = 1
 
-    constructor(title, description, price, thumbnail, code, stock, path){
-        this.id = ProductManager.id++
+    constructor(id, title, description, price, thumbnail, code, stock, path){
+        this.id = id
         this.title = title
         this.description = description
         this.price = price
@@ -18,7 +18,25 @@ class ProductManager{
         this.path = path
     }
 
-    static addProduct(title, description, price, thumbnail, code, stock, path) {
+    static async addProduct(title, description, price, thumbnail, code, stock, path) {
+      try{
+        const dataJSON = await fs.promises.readFile(JSONPath, { encoding: 'utf-8'}, (err, data) => {
+            return data
+        }) 
+
+        console.log(dataJSON)
+
+        ProductManager.products = JSON.parse(dataJSON)
+
+        let id = ProductManager.products.length + 1
+        const idSearch = ProductManager.products.some((products) => {
+            return products.id === id
+        })
+
+        if(idSearch){
+            id +=1
+        }
+
         if (!title || !description || !price || !thumbnail || !code || !stock) {
           console.log("Todos los campos son obligatorios.")
           return
@@ -30,103 +48,117 @@ class ProductManager{
           return
         }
     
-        const newProduct = new ProductManager(title, description, price, thumbnail, code, stock, path)
+        const newProduct = new ProductManager(id, title, description, price, thumbnail, code, stock, path)
         ProductManager.products.push(newProduct)
+        const dataToWrite = JSON.stringify(ProductManager.products, null, 2)
+        await fs.promises.writeFile(JSONPath, dataToWrite, 'utf-8')
         console.log(`Producto agregado con ID: ${newProduct.id}`)
+      } catch(error){
+        console.error(error.message)
+      }
       }
 
-      static getProducts() {
+    static async getProducts() {
+      try{
+        const dataJSON = await fs.promises.readFile(JSONPath, { encoding: 'utf-8'}, (err, data) => {
+          return data
+        }) 
+        ProductManager.products = JSON.parse(dataJSON)
         return ProductManager.products
+      } catch(error){
+        console.error(error.message)
+      }
       }
 
-      static getProductById(id) {
+    static async getProductById(id) {
+      try{
+      const dataJSON = await fs.promises.readFile(JSONPath, { encoding: 'utf-8'}, (err, data) => {
+        return data
+      })
+      ProductManager.products = JSON.parse(dataJSON)
         const product = ProductManager.products.find((ProductManager) => ProductManager.id === id)
         if (product) {
           return product
         } else {
           console.error("Producto no encontrado. ID no válido.")
         }
+      } catch(error){
+        console.error(error.message)
+      }
     }
 
-    static updateProduct(id, updatedProduct) {
+  static async updateProduct(id, updatedProduct) {
+    try{
+      const dataJSON = await fs.promises.readFile(JSONPath, { encoding: 'utf-8'}, (err, data) => {
+        return data
+    })
+    ProductManager.products = JSON.parse(dataJSON)
+
       const productIndex = ProductManager.products.findIndex((product) => product.id === id)
       if (productIndex === -1) {
         console.error("Producto no encontrado. ID no válido.")
         return;
       }
 
+      const existingProduct = ProductManager.products[productIndex];
+      const updatingProduct = { ...existingProduct, ...updatedProduct};
       updatedProduct.id = id
+      ProductManager.products[productIndex] = updatingProduct
 
-      ProductManager.products[productIndex] = updatedProduct
+      const dataToWrite = JSON.stringify(ProductManager.products, null, 2)
+      await fs.promises.writeFile(JSONPath, dataToWrite, 'utf-8')
+    } catch(error){
+      console.error(error.message)
     }
+  }
 
-    static deleteProduct(id) {
+  static async deleteProduct(id) {
+    try{
+    const dataJSON = await fs.promises.readFile(JSONPath, { encoding: 'utf-8'}, (err, data) => {
+        return data
+    })
+    ProductManager.products = JSON.parse(dataJSON)
       const productIndex = ProductManager.products.findIndex((product) => product.id === id);
       if (productIndex === -1) {
         console.error("Producto no encontrado. ID no válido.");
-        return;
+        return
       }
   
       ProductManager.products.splice(productIndex, 1);
       console.log(`Producto con ID ${id} ha sido eliminado.`);
-    }
 
-    static saveProductsToJSON(filePath) {
-      try {
-        const dataToWrite = JSON.stringify(ProductManager.products, null, 2)
-        fs.writeFileSync(filePath, dataToWrite, 'utf-8')
-      } catch (error) {
-        console.error(error.message)
-      }
+      const dataToWrite = JSON.stringify(ProductManager.products, null, 2)
+      await fs.promises.writeFile(JSONPath, dataToWrite, 'utf-8')
+    } catch(error){
+      console.error(error.message)
     }
-
-    static loadProductsFromJSON(filePath) {
-      try {
-        const dataJSON = fs.readFileSync(filePath, 'utf8')
-        ProductManager.products = JSON.parse(dataJSON)
-      } catch (error) {
-        console.error(error.message)
-      }
-    }    
+  }
   }
 
-ProductManager.addProduct("Lies of P", "A Souls-like videogame", 40, "LiesofP.jpg", 2873, true, '/products/img/LiesOfP.jpg')
-ProductManager.addProduct("Sekiro: Shadow Die Twice", "Souls-like game with katanas", 60, "Sekiro.jpg", 2875, true, '/products/img/Sekiro.jpg')
-ProductManager.addProduct("Shadow of doubt", "A Detective sandbox game", 15, "ShadowOfDobut.jpg", 1168, true, '/products/img/ShadowOfDobut.jpg')
-ProductManager.addProduct("Neon White", "A Parkour game", 20, "NeonWhite.jpg", 1268, true, '/products/img/NeonWhite.jpg')
+await ProductManager.addProduct("Lies of P", "A Souls-like videogame", 40, "LiesofP.jpg", 2873, true, '/products/img/LiesOfP.jpg')
+await ProductManager.addProduct("Sekiro: Shadow Die Twice", "Souls-like game with katanas", 60, "Sekiro.jpg", 2875, true, '/products/img/Sekiro.jpg')
+await ProductManager.addProduct("Shadow of doubt", "A Detective sandbox game", 15, "ShadowOfDobut.jpg", 1168, true, '/products/img/ShadowOfDobut.jpg')
+await ProductManager.addProduct("Neon White", "A Parkour game", 20, "NeonWhite.jpg", 1268, true, '/products/img/NeonWhite.jpg')
 
-const allProducts = ProductManager.getProducts()
+const allProducts = await ProductManager.getProducts()
 console.log(allProducts)
 
 //console.log(ProductManager.products)
 
-const productById = ProductManager.getProductById(2)
-console.log(productById)
+const getProductById = await ProductManager.getProductById(2)
+console.log(getProductById)
 
-// const nonExistentProduct = ProductManager.getProductById(10)
+const nonExistentProduct = await ProductManager.getProductById(10)
+console.log(nonExistentProduct)
 
 
-
-ProductManager.updateProduct(2, {
-  title: "Elden Ring",
-  description: "Lastest game of From Software",
-  price: 60,
-  thumbnail: "eldenring.jpg",
-  code: "2875",
-  stock: true,
-  path: '/products/img/EldenRing.jpg'
+await ProductManager.updateProduct(3, {
+  title: "Zelda",
 });
 
 console.log(allProducts)
 
-console.log(ProductManager.getProductById(2))
 
-ProductManager.deleteProduct(4)
+await ProductManager.deleteProduct(4)
 
-console.log(ProductManager.getProducts())
-
-const JSONPath = './ProductManager.json'
-
-ProductManager.saveProductsToJSON(JSONPath)
-
-ProductManager.loadProductsFromJSON(JSONPath)
+console.log(allProducts) 
